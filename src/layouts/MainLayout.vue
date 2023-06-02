@@ -45,12 +45,7 @@
           class="text-right text-bold text-white"
           :class="$q.platform.is.desktop ? 'text-h6' : 'text-subtitle1'"
         >
-          <q-img
-            src="icons/favicon-96x96.png"
-            class="q-pa-sm"
-            :style="$q.platform.is.desktop ? 'height: 40px; width: 40px':'height: 20px; width: 20px'"
-          />
-          Estatísticas Eleições Brasileira
+
         </q-toolbar-title>
       </q-toolbar>
     </q-header>
@@ -76,22 +71,7 @@ export default defineComponent({
           title: "Página Inicial",
           name: "home",
           icon: "home",
-        },
-        {
-          title: "Por Gênero",
-          name: "per-gender",
-          icon: "male",
-        },
-        {
-          title: "Por Cor/Raça",
-          name: "per-race",
-          icon: "groups",
-        },
-        {
-          title: "Por Grau de Instrução",
-          name: "per-education",
-          icon: "school",
-        },
+        }
       ];
 
       return data;

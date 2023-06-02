@@ -1,16 +1,6 @@
 <template>
   <q-page class="home">
-    <card-template
-      style="height: 100%"
-      v-for="card in cards"
-      :key="card.name"
-      :size="card.size"
-      :class="card.class"
-      :text="card.title"
-      :image="card.image"
-      class="cursor-pointer"
-      @click="$router.push({ name: `${card.name}` })"
-    />
+
   </q-page>
 </template>
 
@@ -23,42 +13,15 @@ export default defineComponent({
   setup() {
     const route = useRoute();
     const quasar = useQuasar();
-    const cards = [
-      {
-        name: "per-gender",
-        size: "small",
-        class: "home__card-perGender",
-        title: "Por Gênero",
-        image: "images/genero.jpg",
-      },
-      {
-        name: "per-education",
-        size: "small",
-        class: "home__card",
-        title: "Por Grau de Instrução",
-        image: "images/educacao.jpg",
-      },
-      {
-        name: "per-race",
-        size: "small",
-        class: "home__card",
-        title: "Por Cor/Raça",
-        image: "images/raca.jpg",
-      },
-    ];
-
     function navigateTo(name) {
       route.push({ name: name });
     }
     return {
       navigateTo,
-      cards,
     };
   },
   components: {
-    CardTemplate: defineAsyncComponent(() =>
-      import("components/CardTemplate.vue")
-    ),
+
   },
 });
 </script>

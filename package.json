@@ -1,8 +1,8 @@
 {
-  "name": "election-statistics",
+  "name": "exa844",
   "version": "0.0.1",
-  "description": "Election Statistics brazilian",
-  "productName": "Election Statistics",
+  "description": "A Quasar Framework app",
+  "productName": "exa844",
   "author": "Jonatas <44263115+limajonatas@users.noreply.github.com>",
   "private": true,
   "scripts": {
