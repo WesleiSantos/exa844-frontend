@@ -1,11 +1,68 @@
 <template>
-  <q-page class="home">
-
+  <q-page padding class="home-page">
+    <q-card style="height: 85vh">
+      <q-img
+        :class="
+          $q.dark.isActive ? 'home-page__img-home-dark' : 'home-page__img-home'
+        "
+        fit="cover"
+        src="/images/repository_online.jpg"
+      />
+      <p
+        class="absolute-center text-bold"
+        :class="
+          $q.platform.is.desktop
+            ? 'text-h2'
+            : 'text-h3 text-center full-width q-pa-sm'
+        "
+        style="
+          color: white;
+          text-shadow: -2px 0 black, 0 2px black, 2px 0 black, 0 -2px black;
+        "
+      >
+        Resoluções <br />
+        UEFS
+      </p>
+      <q-card-actions
+        align="center"
+        :class="$q.platform.is.desktop ? 'absolute-right' : 'absolute-bottom'"
+      >
+        <q-btn
+          v-if="existAdm"
+          icon="login"
+          class="text-bold"
+          color="primary"
+          :size="$q.platform.is.desktop ? 'lg' : 'md'"
+          label="Login ADM"
+          :to="{ name: 'login' }"
+        />
+        <q-btn
+          v-if="existAdm"
+          icon="person_add"
+          class="text-bold"
+          color="primary"
+          :size="$q.platform.is.desktop ? 'lg' : 'md'"
+          label="Novo Administrador"
+          @click="$router.push({ name: 'register', query: { type: 'newAdm' } })"
+        />
+        <q-btn
+          v-else
+          icon="person_add"
+          class="text-bold"
+          color="primary"
+          :size="$q.platform.is.desktop ? 'lg' : 'md'"
+          label="Primeiro Acesso"
+          @click="
+            $router.push({ name: 'register', query: { type: 'firstAccess' } })
+          "
+        />
+      </q-card-actions>
+    </q-card>
   </q-page>
 </template>
 
 <script>
-import { defineComponent, defineAsyncComponent } from "vue";
+import { defineComponent, ref } from "vue";
 import { useQuasar } from "quasar";
 import { useRoute } from "vue-router";
 export default defineComponent({
@@ -13,40 +70,35 @@ export default defineComponent({
   setup() {
     const route = useRoute();
     const quasar = useQuasar();
+    const existAdm = ref(false);
     function navigateTo(name) {
       route.push({ name: name });
     }
     return {
+      existAdm,
       navigateTo,
     };
   },
-  components: {
-
-  },
+  components: {},
 });
 </script>
 <style scoped lang="scss">
-.home {
-  display: flex;
-  flex-direction: column;
-  row-gap: 1rem;
-  padding: 1rem;
+.home-page {
+  display: grid;
+  grid-template-columns: 1fr;
 
-  @media (min-width: $breakpoint-sm) {
-    display: grid;
-    grid-template-columns: repeat(2, auto);
-    grid-template-rows: repeat(4, auto);
-    padding: 4rem 10rem 3rem 10rem;
-    gap: 2.5rem;
-
-    &__card-main {
-      grid-column: 1 / 2;
-      grid-row: 1 / 5;
-    }
-    &__card-perGender {
-      grid-column: 2 / 3;
-      grid-row: 1 / 3;
-    }
+  &__img-home {
+    height: 100%;
+    width: 100%;
   }
+
+  &__img-home-dark {
+    height: 100%;
+    width: 100%;
+    filter: invert(80%);
+  }
+}
+.card-login {
+  height: 80vh;
 }
 </style>
