@@ -48,6 +48,7 @@ const routes = [
           title: "Gerenciamento",
           subPage: true,
           requireAuth: true,
+          userPermission: [1],
         },
       },
     ],
