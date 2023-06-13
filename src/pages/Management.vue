@@ -11,7 +11,7 @@
                 ? 'full-width q-mb-md'
                 : 'absolute-top-right q-mt-md q-mr-md'
             "
-            @click="$router.push({ name: 'register', query: { type: 'user' } })"
+            @click="$router.push({ name: 'register-user' })"
           />
           <div
             class="text-center text-bold text-h5 q-mb-sm"

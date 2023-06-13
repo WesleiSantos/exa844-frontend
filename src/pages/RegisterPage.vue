@@ -3,15 +3,9 @@
     <q-card v-if="!checkEmail">
       <q-card-section>
         <div class="text-center text-bold text-h5">
-          {{
-            registerType == "firstAccess"
-              ? "Primeiro Acesso Administrador"
-              : registerType == "newAdm"
-              ? "Novo Administrador"
-              : "Novo Usuário"
-          }}
+          {{ registerType == "admin" ? "Novo Administrador" : "Novo Usuário" }}
         </div>
-        <q-form @submit="register">
+        <q-form>
           <q-input
             v-model="nome"
             label="Nome"
@@ -51,13 +45,23 @@
               />
             </template>
           </q-input>
+          <q-select
+            v-show="registerType == 'user'"
+            v-model="userType"
+            :options="[
+              { label: 'Administrador', value: 'admin' },
+              { label: 'Usuário', value: 'normal' },
+            ]"
+            label="Tipo de usuário"
+            filled
+            class="q-mt-md"
+          />
           <q-btn
             class="full-width q-mt-md"
             color="secondary"
             label="Cadastrar"
-            type="submit"
             :loading="loadingButtonRegister"
-            @click="registerAdm"
+            @click="registerType == 'admin' ? registerAdm() : registerUser()"
           />
         </q-form>
       </q-card-section>
@@ -87,26 +91,53 @@
 
 <script lang="ts">
 import { useQuasar } from "quasar";
-import { defineComponent, ref } from "vue";
-import { useRoute } from "vue-router";
+import { defineComponent, onMounted, ref } from "vue";
 import AuthService from "src/services/AuthService";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 export default defineComponent({
   name: "PageName",
   setup() {
     const nome = ref("");
     const email = ref("");
     const password = ref("");
+    const userType = ref({ label: "Usuário", value: "normal" });
     const is_toggle_pwd = ref(false);
     const route = useRoute();
-    const registerType = ref(route.query.type);
+    const registerType = ref(route.meta.type);
     const checkEmail = ref(false);
     const loadingButtonRegister = ref(false);
     const router = useRouter();
+
     const q = useQuasar();
-    function register() {
-      console.log(nome.value);
-      console.log(email.value);
+    function registerUser() {
+      AuthService.createUser({
+        name: nome.value,
+        email: email.value,
+        password: password.value,
+        role: userType.value.value,
+      })
+        .then((res) => {
+          console.log(res);
+          q.notify({
+            message: "Usuário cadastrado com sucesso!",
+            color: "positive",
+            icon: "check",
+            position: "top",
+          });
+          nome.value = "";
+          email.value = "";
+          password.value = "";
+          router.back();
+        })
+        .catch((err) => {
+          console.log(err);
+          q.notify({
+            message: err.response.data.message ?? "Erro ao cadastrar usuário!",
+            color: "negative",
+            icon: "report_problem",
+            position: "top",
+          });
+        });
     }
 
     function registerAdm() {
@@ -135,16 +166,15 @@ export default defineComponent({
           });
         });
     }
-    function registerUser() {
-      console.log("registerUser");
-    }
+
     return {
       nome,
       registerType,
       password,
       is_toggle_pwd,
-      register,
+      registerUser,
       registerAdm,
+      userType,
       email,
       checkEmail,
       loadingButtonRegister,

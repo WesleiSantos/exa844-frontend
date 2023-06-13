@@ -18,15 +18,17 @@ export const authStore = defineStore("auth", {
           .post("login", user)
           .then(({ data }) => {
             console.log(data);
-            const token = data.token;
+            const token = data.access_token;
             const user = data.user;
+
+            console.log(token, user);
             this.DEFINE_USER_LOGGED({
               token: token,
               user: user,
               isLogged: true,
             });
             api.defaults.headers.common["Authorization"] = `Bearer ${
-              user.api_token || ""
+              token || ""
             }`;
             resolve(data);
           })

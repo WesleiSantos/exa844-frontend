@@ -37,7 +37,20 @@ const routes = [
         component: () => import("src/pages/RegisterPage.vue"),
         meta: {
           title: "Cadastro",
+          type: "admin",
           subPage: true,
+        },
+      },
+      {
+        path: "/cadastro-usuario",
+        name: "register-user",
+        component: () => import("src/pages/RegisterPage.vue"),
+        meta: {
+          title: "Cadastro",
+          type: "user",
+          subPage: true,
+          requireAuth: true,
+          userPermission: [1],
         },
       },
       {
