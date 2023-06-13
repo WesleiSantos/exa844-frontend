@@ -101,7 +101,7 @@ export default defineComponent({
     const email = ref("");
     const password = ref("");
     const userType = ref({ label: "Usuário", value: "normal" });
-    const is_toggle_pwd = ref(false);
+    const is_toggle_pwd = ref(true);
     const route = useRoute();
     const registerType = ref(route.meta.type);
     const checkEmail = ref(false);

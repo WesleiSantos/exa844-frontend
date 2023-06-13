@@ -4,7 +4,7 @@
       <q-toolbar class="row">
         <!-- ARROW BACK PAGE-->
         <q-btn
-          v-if="$route.name != 'home' && $route.name != 'management'"
+          v-if="$route.meta.subPage"
           color="white"
           icon="arrow_back"
           flat
@@ -37,6 +37,7 @@
           flat
           class="q-pl-none q-pr-xs"
           @click="logout"
+          :loading="loadingButtonLogout"
         />
       </q-toolbar>
     </q-header>
@@ -53,14 +54,17 @@
 </template>
 
 <script>
-import { Dark } from "quasar";
-import { defineComponent, ref, computed, watch } from "vue";
+import { Dark, Notify } from "quasar";
+import { defineComponent, ref, computed, watch, onMounted } from "vue";
 import { useRoute } from "vue-router";
-
+import { authStore as useAuthStore } from "stores/auth-store";
+import { storeToRefs } from "pinia";
 export default defineComponent({
   name: "MainLayout",
 
   setup() {
+    const authStore = useAuthStore();
+    const { userLogged, user, dark } = storeToRefs(authStore);
     const showTitle = ref(false);
     const linksList = computed(() => {
       let data = [
@@ -73,17 +77,44 @@ export default defineComponent({
 
       return data;
     });
-    const dark = ref(false);
+
+
     watch(
       () => dark.value,
       () => {
         Dark.toggle();
       }
     );
+
+    const loadingButtonLogout = ref(false);
+    function logout() {
+      loadingButtonLogout.value = true;
+      authStore
+        .logout().then((resp)=>{
+          console.log(resp)
+        }).catch((error)=>{
+          console.log(error)
+          Notify.create({
+            message: 'Não foi possível fazer logout'
+          })
+        }).finally(() => {
+          loadingButtonLogout.value = false;
+        });
+    }
+    onMounted(() => {
+      if (dark.value) {
+        Dark.set(true);
+      } else {
+        Dark.set(false);
+      }
+    });
+
     return {
       showTitle,
       linksList,
       dark,
+      logout,
+      loadingButtonLogout,
     };
   },
 });

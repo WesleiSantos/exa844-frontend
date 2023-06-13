@@ -5,6 +5,7 @@ import { Loading, Notify } from "quasar";
 export const authStore = defineStore("auth", {
   state: () => ({
     // USER DATA
+    dark: false,
     userLogged: false,
     user: {},
     token: null,

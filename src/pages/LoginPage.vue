@@ -20,14 +20,23 @@
             v-model="senha"
             label="Senha"
             filled
-            type="password"
             class="q-mt-md"
             lazy-rules
+            :type="showPassword ? 'password' : 'text'"
             :rules="[
               (val) => !!val || 'Campo obrigatório',
               (val) => val.length >= 6 || 'Senha muito curta',
             ]"
-          />
+          >
+            <!-- show password-->
+            <template v-slot:append>
+              <q-icon
+                :name="showPassword ? 'visibility_off' : 'visibility'"
+                class="cursor-pointer"
+                @click="showPassword = !showPassword"
+              />
+            </template>
+          </q-input>
           <!--
             lembre-me
           -->
@@ -62,6 +71,7 @@ import { storeToRefs } from "pinia";
 export default defineComponent({
   name: "LoginPage",
   setup() {
+    const showPassword = ref(true);
     const senha = ref("");
     const email = ref("");
     const lembreMe = ref(false);
@@ -107,6 +117,7 @@ export default defineComponent({
       email,
       loadingButtonLogin,
       lembreMe,
+      showPassword,
     };
   },
   components: {},

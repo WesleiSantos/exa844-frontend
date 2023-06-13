@@ -19,7 +19,6 @@ const routes = [
         component: () => import("src/pages/IndexPage.vue"),
         meta: {
           title: "Login",
-          subPage: true,
         },
       },
       {
@@ -57,6 +56,16 @@ const routes = [
         path: "/gerenciamento",
         name: "management",
         component: () => import("src/pages/Management.vue"),
+        meta: {
+          title: "Gerenciamento",
+          requireAuth: true,
+          userPermission: [1],
+        },
+      },
+      {
+        path: "/editar-usuario",
+        name: "edit-user",
+        component: () => import("src/pages/EditUser.vue"),
         meta: {
           title: "Gerenciamento",
           subPage: true,

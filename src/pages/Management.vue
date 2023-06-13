@@ -27,6 +27,9 @@
           :columns="columns"
           separator="horizontal"
           :loading="loadingTable"
+          :pagination="{
+            rowsPerPage: 10,
+          }"
         >
           <template v-slot:body-cell-actions="{ row }">
             <q-td>
@@ -36,7 +39,7 @@
                 rounded
                 dense
                 flat
-                @click="editUser(row)"
+                @click="editUser(row.id)"
               />
               <q-btn
                 color="negative"
@@ -44,7 +47,8 @@
                 rounded
                 dense
                 flat
-                @click="deleteUser(row)"
+                @click="deleteUser(row.id)"
+                :loading="loadingButtonDelete"
               />
             </q-td>
           </template>
@@ -103,6 +107,7 @@
                         rounded
                         dense
                         @click="deleteUser(props.row)"
+                        :loading="loadingButtonDelete"
                       />
                     </q-item-section>
 
@@ -125,17 +130,19 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import AuthService from "src/services/AuthService";
 import { Notify } from "quasar";
 
 export default defineComponent({
   name: "LoginPage",
   setup() {
+    const loadingButtonDelete = ref(false);
     const senha = ref("");
     const email = ref("");
     const lembreMe = ref(false);
     const route = useRoute();
+    const router = useRouter();
     const loadingTable = ref(false);
     const columns = ref([
       {
@@ -170,17 +177,36 @@ export default defineComponent({
         required: true,
       },
     ]);
+
     const users = ref([]);
 
-    function register() {
-      console.log(senha.value);
-      console.log(email.value);
+    function editUser(id) {
+      router.push({ name: "edit-user", query: { id: id } });
     }
-    function editUser(row) {
-      console.log(row);
-    }
-    function deleteUser(row) {
-      console.log(row);
+
+    function deleteUser(id) {
+      AuthService.deleteUser(id)
+        .then((response) => {
+          loadingButtonDelete.value = true;
+          console.log(response.data);
+          Notify.create({
+            message: "Usuário removido com sucesso",
+            color: "warning",
+            icon: "check",
+          });
+          getUsers();
+        })
+        .catch((error) => {
+          console.log(error);
+          Notify.create({
+            message: "Erro ao remover usuário",
+            color: "negative",
+            icon: "report_problem",
+          });
+        })
+        .finally(() => {
+          loadingButtonDelete.value = false;
+        });
     }
 
     function getUsers() {
@@ -191,7 +217,6 @@ export default defineComponent({
           users.value = response.data;
         })
         .catch((error) => {
-          console.log(error);
           Notify.create({
             message: "Erro ao carregar usuários",
             color: "negative",
@@ -208,7 +233,6 @@ export default defineComponent({
     });
     return {
       senha,
-      register,
       email,
       lembreMe,
       users,
@@ -216,6 +240,7 @@ export default defineComponent({
       editUser,
       deleteUser,
       loadingTable,
+      loadingButtonDelete,
     };
   },
   components: {},
