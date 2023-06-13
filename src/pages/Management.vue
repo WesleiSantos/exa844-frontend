@@ -23,9 +23,10 @@
         <!-- lista de usuário (nome, tipo, email, botão editar e botão remover)-->
         <q-table
           :grid="$q.screen.lt.sm"
-          :rows="usersExperimental"
+          :rows="users"
           :columns="columns"
           separator="horizontal"
+          :loading="loadingTable"
         >
           <template v-slot:body-cell-actions="{ row }">
             <q-td>
@@ -40,19 +41,18 @@
               <q-btn
                 color="negative"
                 icon="delete"
-                rounded=""
+                rounded
                 dense
                 flat
                 @click="deleteUser(row)"
               />
             </q-td>
           </template>
-          <template v-slot:props> </template>
           <template v-slot:body-cell-tipo="{ row }">
             <q-td>
               <q-chip
-                :label="row.tipo"
-                :color="row.tipo === 'Administrador' ? 'info' : 'secondary'"
+                :label="row.role[0].role === 'adm' ? 'Administrador' : 'Normal'"
+                :color="row.role[0].role === 'adm' ? 'info' : 'secondary'"
               />
             </q-td>
           </template>
@@ -124,8 +124,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
+import AuthService from "src/services/AuthService";
+import { Notify } from "quasar";
+
 export default defineComponent({
   name: "LoginPage",
   setup() {
@@ -133,21 +136,23 @@ export default defineComponent({
     const email = ref("");
     const lembreMe = ref(false);
     const route = useRoute();
-    const loadingButtonRegister = ref(false);
+    const loadingTable = ref(false);
     const columns = ref([
       {
         name: "nome",
         label: "Nome",
         align: "left",
-        field: (row) => row.nome,
+        field: (row) => row.name,
         sortable: true,
+        required: true,
       },
       {
         name: "tipo",
         label: "Tipo",
         align: "left",
-        field: (row) => row.tipo,
+        field: (row) => row.role[0].role,
         sortable: true,
+        required: true,
       },
       {
         name: "email",
@@ -155,31 +160,18 @@ export default defineComponent({
         align: "left",
         field: (row) => row.email,
         sortable: true,
+        required: true,
       },
       {
         name: "actions",
         label: "Actions",
         field: "actions",
         align: "left",
+        required: true,
       },
     ]);
-    const usersExperimental = ref([
-      {
-        nome: "João",
-        tipo: "Administrador",
-        email: "teste@gmail.com",
-      },
-      {
-        nome: "Maria",
-        tipo: "Comum",
-        email: "teste@hotmail.com",
-      },
-      {
-        nome: "José",
-        tipo: "Comum",
-        email: "teste@outlook.com",
-      },
-    ]);
+    const users = ref([]);
+
     function register() {
       console.log(senha.value);
       console.log(email.value);
@@ -190,16 +182,40 @@ export default defineComponent({
     function deleteUser(row) {
       console.log(row);
     }
+
+    function getUsers() {
+      loadingTable.value = true;
+      AuthService.getUsers()
+        .then((response) => {
+          console.log(response.data);
+          users.value = response.data;
+        })
+        .catch((error) => {
+          console.log(error);
+          Notify.create({
+            message: "Erro ao carregar usuários",
+            color: "negative",
+            icon: "report_problem",
+          });
+        })
+        .finally(() => {
+          loadingTable.value = false;
+        });
+    }
+
+    onMounted(() => {
+      getUsers();
+    });
     return {
       senha,
       register,
       email,
-      loadingButtonRegister,
       lembreMe,
-      usersExperimental,
+      users,
       columns,
       editUser,
       deleteUser,
+      loadingTable,
     };
   },
   components: {},

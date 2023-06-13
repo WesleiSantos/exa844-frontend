@@ -57,7 +57,7 @@
             label="Cadastrar"
             type="submit"
             :loading="loadingButtonRegister"
-            @click="registerAdm"
+            @click="register"
           />
         </q-form>
       </q-card-section>
@@ -105,8 +105,38 @@ export default defineComponent({
     const router = useRouter();
     const q = useQuasar();
     function register() {
-      console.log(nome.value);
-      console.log(email.value);
+        if (registerType.value == "newAdm") {
+          registerAdm();
+        } else {
+          registerUser();
+        }
+    }
+    function registerUser(){
+      AuthService.registerUserType({
+        name: nome.value,
+        email: email.value,
+        password: password.value,
+        role: 'normal'
+      })
+        .then((res) => {
+          console.log(res);
+          q.notify({
+            message: "Usuário cadastrado com sucesso!",
+            color: "positive",
+            icon: "check",
+            position: "top",
+          });
+          void router.push({ name: "gerenciamento" });
+        })
+        .catch((err) => {
+          console.log(err);
+          q.notify({
+            message: err.response.data.message ?? "Erro ao cadastrar usuário!",
+            color: "negative",
+            icon: "report_problem",
+            position: "top",
+          });
+        });
     }
 
     function registerAdm() {
@@ -134,9 +164,6 @@ export default defineComponent({
             position: "top",
           });
         });
-    }
-    function registerUser() {
-      console.log("registerUser");
     }
     return {
       nome,
