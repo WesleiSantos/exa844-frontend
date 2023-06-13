@@ -8,11 +8,14 @@ export default {
   },
 
   createUser: (user) => {
-    console.log(`Bearer ${authStore.token}`);
     return api.post(`/create`, user);
   },
 
   loginUser: (user) => {
     return api.post(`/login`, user);
+  },
+
+  getUsers: () => {
+    return api.get(`/user`);
   },
 };

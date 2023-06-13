@@ -28,6 +28,16 @@
           :icon="dark ? 'nightlight' : 'light_mode'"
           :size="$q.platform.is.desktop ? 'lg' : 'md'"
         />
+        <!-- logout -->
+        <q-btn
+          v-if="$route.name != 'home'"
+          color="white"
+          icon="logout"
+          label="Sair"
+          flat
+          class="q-pl-none q-pr-xs"
+          @click="logout"
+        />
       </q-toolbar>
     </q-header>
     <q-page-container>
