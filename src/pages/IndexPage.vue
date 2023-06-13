@@ -28,33 +28,20 @@
         :class="$q.platform.is.desktop ? 'absolute-right' : 'absolute-bottom'"
       >
         <q-btn
-          v-if="existAdm"
           icon="login"
           class="text-bold"
           color="primary"
           :size="$q.platform.is.desktop ? 'lg' : 'md'"
-          label="Login ADM"
+          label="Login"
           :to="{ name: 'login' }"
         />
         <q-btn
-          v-if="existAdm"
           icon="person_add"
           class="text-bold"
           color="primary"
           :size="$q.platform.is.desktop ? 'lg' : 'md'"
           label="Novo Administrador"
           @click="$router.push({ name: 'register', query: { type: 'newAdm' } })"
-        />
-        <q-btn
-          v-else
-          icon="person_add"
-          class="text-bold"
-          color="primary"
-          :size="$q.platform.is.desktop ? 'lg' : 'md'"
-          label="Primeiro Acesso"
-          @click="
-            $router.push({ name: 'register', query: { type: 'firstAccess' } })
-          "
         />
       </q-card-actions>
     </q-card>

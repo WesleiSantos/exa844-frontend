@@ -47,6 +47,7 @@ const routes = [
         meta: {
           title: "Gerenciamento",
           subPage: true,
+          requireAuth: true,
         },
       },
     ],

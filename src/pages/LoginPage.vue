@@ -11,7 +11,10 @@
             type="email"
             class="q-mt-md"
             lazy-rules
-            :rules="[(val) => !!val || 'Campo obrigatório']"
+            :rules="[
+              (val) => !!val || 'Campo obrigatório',
+              (val) => /.+@.+\..+/.test(val) || 'E-mail inválido',
+            ]"
           />
           <q-input
             v-model="senha"
@@ -29,6 +32,7 @@
             lembre-me
           -->
           <q-checkbox
+            v-show="false"
             v-model="lembreMe"
             class="q-mt-md"
             label="Manter-me conectado"
@@ -45,14 +49,16 @@
         </q-form>
       </q-card-section>
     </q-card>
-
-
   </q-page>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import { useRoute } from "vue-router";
+import { useRouter } from "vue-router";
+import { useQuasar } from "quasar";
+import { authStore as useAuthStore } from "stores/auth-store";
+import { storeToRefs } from "pinia";
+
 export default defineComponent({
   name: "LoginPage",
   setup() {
@@ -60,10 +66,40 @@ export default defineComponent({
     const email = ref("");
     const lembreMe = ref(false);
     const loadingButtonLogin = ref(false);
-
+    const authStore = useAuthStore();
+    const { userLogged, user } = storeToRefs(authStore);
+    const $q = useQuasar();
+    const router = useRouter();
     function login() {
-      console.log(senha.value);
-      console.log(email.value);
+      $q.loading.show({
+        message: "Realizando login...",
+      });
+      authStore
+        .login({
+          email: email.value,
+          password: senha.value,
+        })
+        .then(() => {
+          $q.notify({
+            color: "positive",
+            position: "top",
+            message: "Logado com sucesso!",
+            icon: "report_problem",
+          });
+          router.push({ name: "management" });
+        })
+        .catch((err) => {
+          console.log(err);
+          $q.notify({
+            color: "negative",
+            position: "top",
+            message: "Erro ao realizar login!",
+            icon: "report_problem",
+          });
+        })
+        .finally(() => {
+          $q.loading.hide();
+        });
     }
     return {
       senha,

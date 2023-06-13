@@ -29,16 +29,35 @@
             label="E-mail"
             filled
             type="email"
-            class="q-mt-md"
             lazy-rules
-            :rules="[(val) => !!val || 'Campo obrigatório']"
+            :rules="[
+              (val) => !!val || 'Campo obrigatório',
+              (val) => /.+@.+\..+/.test(val) || 'E-mail inválido',
+            ]"
           />
+          <q-input
+            filled
+            v-model="password"
+            label="Senha"
+            :type="is_toggle_pwd ? 'password' : 'text'"
+            lazy-rules
+            :rules="[(val) => (val && val.length > 0) || 'Campo obrigatório']"
+          >
+            <template v-slot:append>
+              <q-icon
+                :name="is_toggle_pwd ? 'visibility_off' : 'visibility'"
+                class="cursor-pointer"
+                @click="is_toggle_pwd = !is_toggle_pwd"
+              />
+            </template>
+          </q-input>
           <q-btn
             class="full-width q-mt-md"
             color="secondary"
             label="Cadastrar"
             type="submit"
             :loading="loadingButtonRegister"
+            @click="registerAdm"
           />
         </q-form>
       </q-card-section>
@@ -67,26 +86,54 @@
 </template>
 
 <script lang="ts">
-import { Notify } from "quasar";
+import { useQuasar } from "quasar";
 import { defineComponent, ref } from "vue";
 import { useRoute } from "vue-router";
+import AuthService from "src/services/AuthService";
+import { useRouter } from "vue-router";
 export default defineComponent({
   name: "PageName",
   setup() {
     const nome = ref("");
     const email = ref("");
+    const password = ref("");
+    const is_toggle_pwd = ref(false);
     const route = useRoute();
     const registerType = ref(route.query.type);
     const checkEmail = ref(false);
     const loadingButtonRegister = ref(false);
-
+    const router = useRouter();
+    const q = useQuasar();
     function register() {
       console.log(nome.value);
       console.log(email.value);
     }
 
     function registerAdm() {
-      console.log("registerAdm");
+      AuthService.registerUser({
+        name: nome.value,
+        email: email.value,
+        password: password.value,
+      })
+        .then((res) => {
+          console.log(res);
+          q.notify({
+            message: "Usuário cadastrado com sucesso!",
+            color: "positive",
+            icon: "check",
+            position: "top",
+          });
+          router.push({ name: "login" });
+        })
+        .catch((err) => {
+          console.log(err);
+          q.notify({
+            message: err.response.data.message ?? "Erro ao cadastrar usuário!",
+            color: "negative",
+            icon: "report_problem",
+            position: "top",
+          });
+        });
     }
     function registerUser() {
       console.log("registerUser");
@@ -94,7 +141,10 @@ export default defineComponent({
     return {
       nome,
       registerType,
+      password,
+      is_toggle_pwd,
       register,
+      registerAdm,
       email,
       checkEmail,
       loadingButtonRegister,
